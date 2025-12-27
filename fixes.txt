@@ -1,0 +1,22 @@
+104;9uyay paru
+
+fixing the the copy bar height
+
+vivaldi
+
+nixos nix
+
+Show all the shortcuts at the bottom, a bit like lazygit/lazyvim do.
+
+Add a vim-like search/filter with `/
+
+Add ghostty
+
+
+merge pr
+
+foss switch
+
+update the goals to add winget and brew, buy a domain name, dockerfile
+
+see the guy's comment on tooltips for mobile and keyboard
