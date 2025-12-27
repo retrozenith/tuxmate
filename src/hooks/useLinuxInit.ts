@@ -190,7 +190,7 @@ export function useLinuxInit(): UseLinuxInitReturn {
         if (packageNames.length === 0) return '# No packages selected';
 
         // Handle special cases for NixOS and Snap
-        if (selectedDistro === 'nixos') {
+        if (selectedDistro === 'nix') {
             // NixOS needs nixpkgs. prefix for each package
             return `${distro.installPrefix} ${packageNames.map(p => `nixpkgs.${p}`).join(' ')}`;
         }
