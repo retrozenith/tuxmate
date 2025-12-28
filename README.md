@@ -94,6 +94,20 @@ docker build -t tuxmate:latest .
 docker run -p 3000:3000 tuxmate:latest
 ```
 
+### Using Pre-built Images
+
+Pre-built Docker images are automatically published to GitHub Container Registry:
+
+```bash
+# Pull and run the latest image
+docker pull ghcr.io/abusoww/tuxmate:latest
+docker run -p 3000:3000 ghcr.io/abusoww/tuxmate:latest
+
+# Or use a specific version
+docker pull ghcr.io/abusoww/tuxmate:v1.0.0
+docker run -p 3000:3000 ghcr.io/abusoww/tuxmate:v1.0.0
+```
+
 ### Using Docker Compose (Recommended)
 
 ```bash
@@ -157,6 +171,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 - [x] Package availability indicators
 - [x] Custom domain
 - [x] Docker support for containerized deployment
+- [x] CI/CD workflow for automated Docker builds
 
 ### Planned
 
