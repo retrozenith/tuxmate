@@ -1396,7 +1396,7 @@ export default function Home() {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 sm:gap-x-8">
+                    <div key={searchQuery} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 sm:gap-x-8">
                         {columns.map((columnCategories, colIdx) => {
                             // Calculate starting index for this column
                             let globalIdx = 0;
