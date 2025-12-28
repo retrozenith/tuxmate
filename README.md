@@ -117,10 +117,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 - [x] Copy command & Download script
 - [x] Package availability indicators
 - [x] Custom domain
+- [x] Search & filter applications
 
 ### Planned
 
-- [ ] Search & filter applications
 - [ ] Winget support (Windows)
 - [ ] Homebrew support (macOS)
 - [ ] Dockerfile for containerized deployment

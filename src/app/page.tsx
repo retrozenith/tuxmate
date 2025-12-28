@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Copy, ChevronDown, ChevronRight, ChevronUp, X, Download, HelpCircle, Github, Heart } from 'lucide-react';
+import { Check, Copy, ChevronDown, ChevronRight, ChevronUp, X, Download, HelpCircle, Github, Heart, Search } from 'lucide-react';
 import { useLinuxInit } from '@/hooks/useLinuxInit';
 import { distros, categories, getAppsByCategory, type DistroId, type AppData, type Category } from '@/lib/data';
 import { generateInstallScript } from '@/lib/generateInstallScript';
@@ -1127,19 +1127,53 @@ export default function Home() {
     const { tooltip, show: showTooltip, hide: hideTooltip, onTooltipEnter, onTooltipLeave } = useDelayedTooltip(600);
     const { selectedDistro, selectedApps, setSelectedDistro, toggleApp, clearAll, isAppAvailable, generatedCommand, selectedCount, hasYayInstalled, setHasYayInstalled, hasAurPackages, aurPackageNames, aurAppNames } = useLinuxInit();
 
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Filter apps based on search query
+    const filteredCategoriesWithApps = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return categories.map(cat => ({ category: cat, apps: getAppsByCategory(cat) })).filter(c => c.apps.length > 0);
+        }
+
+        const query = searchQuery.toLowerCase().trim();
+        const filtered = categories.map(cat => {
+            const categoryApps = getAppsByCategory(cat);
+            const matchingApps = categoryApps.filter(app =>
+                app.name.toLowerCase().includes(query) ||
+                app.description.toLowerCase().includes(query)
+            );
+            return { category: cat, apps: matchingApps };
+        }).filter(c => c.apps.length > 0);
+
+        return filtered;
+    }, [searchQuery]);
+
     const allCategoriesWithApps = useMemo(() => categories.map(cat => ({ category: cat, apps: getAppsByCategory(cat) })).filter(c => c.apps.length > 0), []);
     const columns = useMemo(() => {
-        const cols: Array<typeof allCategoriesWithApps> = [[], [], [], [], []];
+        const cols: Array<typeof filteredCategoriesWithApps> = [[], [], [], [], []];
         const heights = [0, 0, 0, 0, 0];
-        allCategoriesWithApps.forEach(catData => {
+        filteredCategoriesWithApps.forEach(catData => {
             const minIdx = heights.indexOf(Math.min(...heights));
             cols[minIdx].push(catData);
             heights[minIdx] += catData.apps.length + 2;
         });
         return cols;
-    }, [allCategoriesWithApps]);
+    }, [filteredCategoriesWithApps]);
 
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => new Set(categories));
+
+    // Auto-expand all categories when searching to show all results
+    useEffect(() => {
+        if (searchQuery.trim()) {
+            // When searching, expand all filtered categories
+            setExpandedCategories(new Set(filteredCategoriesWithApps.map(c => c.category)));
+        } else {
+            // When not searching, expand all categories by default
+            setExpandedCategories(new Set(categories));
+        }
+    }, [searchQuery, filteredCategoriesWithApps]);
     const toggleCategoryExpanded = useCallback((cat: string) => {
         setExpandedCategories(prev => { const next = new Set(prev); next.has(cat) ? next.delete(cat) : next.add(cat); return next; });
     }, []);
@@ -1176,6 +1210,21 @@ export default function Home() {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Ctrl/Cmd+F to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                searchInputRef.current?.focus();
+                return;
+            }
+
+            // Escape to clear search if search is focused
+            if (e.key === 'Escape' && document.activeElement === searchInputRef.current) {
+                e.preventDefault();
+                setSearchQuery('');
+                searchInputRef.current?.blur();
+                return;
+            }
+
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
             const key = e.key;
             if (key === ' ') {
@@ -1261,6 +1310,7 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
+
                         <div className="header-controls flex items-center gap-3 sm:gap-4">
                             {/* Minimal text links group */}
                             <div className="flex items-center gap-3 sm:gap-4">
@@ -1292,9 +1342,60 @@ export default function Home() {
                 </div>
             </header>
 
+            {/* Search Section */}
+            <div className="px-4 sm:px-6 pb-6 relative" style={{ zIndex: 1 }}>
+                <div className="max-w-6xl mx-auto">
+                    <div className="relative max-w-2xl mx-auto">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] pointer-events-none" />
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search applications... (Ctrl+F)"
+                            className="w-full h-12 pl-12 pr-12 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-base placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-[var(--accent)]/50 transition-all duration-200 shadow-sm"
+                            style={{ transition: 'background-color 0.5s, border-color 0.5s, color 0.5s' }}
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    searchInputRef.current?.focus();
+                                }}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--bg-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                                aria-label="Clear search"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
             {/* App Grid */}
             <main className="px-4 sm:px-6 pb-24 relative" style={{ zIndex: 1 }}>
                 <div className="max-w-6xl mx-auto">
+                    {/* No Results Message */}
+                    {searchQuery.trim() && filteredCategoriesWithApps.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                            <Search className="w-16 h-16 text-[var(--text-muted)] opacity-30 mb-4" />
+                            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No apps found</h3>
+                            <p className="text-sm text-[var(--text-muted)] max-w-md">
+                                No applications match "<span className="font-medium text-[var(--text-secondary)]">{searchQuery}</span>".
+                                Try a different search term or clear the search to see all apps.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    searchInputRef.current?.focus();
+                                }}
+                                className="mt-6 px-4 py-2 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors text-sm font-medium"
+                            >
+                                Clear search
+                            </button>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 sm:gap-x-8">
                         {columns.map((columnCategories, colIdx) => {
                             // Calculate starting index for this column
