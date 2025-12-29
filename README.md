@@ -21,7 +21,6 @@ applications on a fresh Linux system.
 Maybe you've just installed a fresh Linux distro. Perhaps you're setting up
 a new machine or can't remember all the package names for your favorite apps?
 
-
 ## 📦 Supported Distributions
 
 - Ubuntu / Debian (apt)
@@ -34,10 +33,12 @@ a new machine or can't remember all the package names for your favorite apps?
 
 ## ✨ Features 🌟
 
-### **Application Catalog**  
+### **Application Catalog**
+
 150+ applications across 15 categories: browsers, communication, dev tools, terminals, media, creative software, gaming, office, VPN/network, security, and more.
 
-### **Smart Script Generation**  
+### **Smart Script Generation**
+
 - Detects already-installed packages
 - Handles AUR packages automatically on Arch
 - Enables RPM Fusion when needed on Fedora
@@ -46,20 +47,15 @@ a new machine or can't remember all the package names for your favorite apps?
 - Progress bars with ETA
 - Colored output and summary reports
 
-### **Availability Awareness**  
+### **Availability Awareness**
+
 Shows which apps are available for your selected distro, with instructions for unavailable packages.
-
-
-
 
 ## �📸 Screenshots 🖼️
 
 ![](src/screenshots/1.png)
 ![](src/screenshots/2.png)
 ![](src/screenshots/3.png)
-
-
-
 
 <details>
 <summary><h2>💻 Development</h2></summary>
@@ -80,7 +76,6 @@ npm start
 
 </details>
 
-
 ## 🛠️ Tech Stack
 
 - Next.js 16
@@ -90,9 +85,10 @@ npm start
 - Framer Motion
 - GSAP
 
-
 ## 🚀 Usage
+
 you can use the Arrow Keys or `h` `j` `k` `l` to navigate, `Enter` to select, `Esc` to go back, `Space` to toggle selection.
+
 1. Select your distribution from the dropdown
 2. Browse categories and select applications
 3. Copy the generated command or download the full install script
@@ -102,11 +98,10 @@ you can use the Arrow Keys or `h` `j` `k` `l` to navigate, `Enter` to sele
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
-
-
 ## 🎯 Roadmap
 
 ### Completed
+
 - [x] Multi-distro support (Ubuntu, Debian, Arch, Fedora, openSUSE)
 - [x] Nix, Flatpak & Snap universal package support
 - [x] 150+ applications across 15 categories
@@ -135,6 +130,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 <div align="right">
 
 ## 📜 License
+
 Licensed under the [GPL-3.0 License](LICENSE) <br>
 Free software — you can redistribute and modify it under the terms of the GNU General Public License.
 

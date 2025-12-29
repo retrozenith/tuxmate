@@ -1,20 +1,23 @@
-import { apps, distros, type DistroId, type AppData } from './data';
+import { apps, distros, type DistroId, type AppData } from "./data";
 
 interface ScriptOptions {
-    distroId: DistroId;
-    selectedAppIds: Set<string>;
+  distroId: DistroId;
+  selectedAppIds: Set<string>;
 }
 
-function getSelectedPackages(selectedAppIds: Set<string>, distroId: DistroId): { app: AppData; pkg: string }[] {
-    return Array.from(selectedAppIds)
-        .map(id => apps.find(a => a.id === id))
-        .filter((app): app is AppData => !!app && !!app.targets[distroId])
-        .map(app => ({ app, pkg: app.targets[distroId]! }));
+function getSelectedPackages(
+  selectedAppIds: Set<string>,
+  distroId: DistroId
+): { app: AppData; pkg: string }[] {
+  return Array.from(selectedAppIds)
+    .map(id => apps.find(a => a.id === id))
+    .filter((app): app is AppData => !!app && !!app.targets[distroId])
+    .map(app => ({ app, pkg: app.targets[distroId]! }));
 }
 
 function generateAsciiHeader(distroName: string, pkgCount: number): string {
-    const date = new Date().toISOString().split('T')[0];
-    return `#!/bin/bash
+  const date = new Date().toISOString().split("T")[0];
+  return `#!/bin/bash
 #
 #  ████████╗██╗   ██╗██╗  ██╗███╗   ███╗ █████╗ ████████╗███████╗
 #  ╚══██╔══╝██║   ██║╚██╗██╔╝████╗ ████║██╔══██╗╚══██╔══╝██╔════╝
@@ -39,7 +42,7 @@ set -euo pipefail
 
 // Shared utilities for all scripts
 function generateSharedUtils(total: number): string {
-    return `# ─────────────────────────────────────────────────────────────────────────────
+  return `# ─────────────────────────────────────────────────────────────────────────────
 #  Colors & Utilities
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -171,7 +174,10 @@ print_summary() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateUbuntuScript(packages: { app: AppData; pkg: string }[]): string {
-    return generateAsciiHeader('Ubuntu', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Ubuntu", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { dpkg -l "$1" 2>/dev/null | grep -q "^ii"; }
 
 # Auto-fix broken dependencies
@@ -245,10 +251,11 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -256,7 +263,10 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateDebianScript(packages: { app: AppData; pkg: string }[]): string {
-    return generateAsciiHeader('Debian', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Debian", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { dpkg -l "$1" 2>/dev/null | grep -q "^ii"; }
 
 fix_deps() {
@@ -321,10 +331,11 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -332,23 +343,49 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateArchScript(packages: { app: AppData; pkg: string }[]): string {
-    // Known AUR packages based on data.ts (not in official Arch repos)
-    const knownAurPackages = new Set([
-        // -bin, -git, -appimage suffixes
-        'brave-bin', 'librewolf-bin', 'vesktop-bin', 'vscodium-bin', 'bun-bin',
-        'postman-bin', 'heroic-games-launcher-bin', 'protonup-qt-bin', 'onlyoffice-bin',
-        'logseq-desktop-bin', 'joplin-appimage', 'localsend-bin', 'zen-browser-bin',
-        'helium-browser-bin', 'cursor-bin', 'ab-download-manager-bin', 'mullvad-vpn-bin',
-        'orcaslicer-bin', 'bruno-bin', 'hoppscotch-bin',
-        // Known AUR packages without suffix
-        'google-chrome', 'sublime-text-4', 'spotify', 'stremio', 'dropbox',
-        'slack-desktop', 'zoom', 'proton-vpn-gtk-app', 'bitwarden', 'obsidian'
-    ]);
+  // Known AUR packages based on data.ts (not in official Arch repos)
+  const knownAurPackages = new Set([
+    // -bin, -git, -appimage suffixes
+    "brave-bin",
+    "librewolf-bin",
+    "vesktop-bin",
+    "vscodium-bin",
+    "bun-bin",
+    "postman-bin",
+    "heroic-games-launcher-bin",
+    "protonup-qt-bin",
+    "onlyoffice-bin",
+    "logseq-desktop-bin",
+    "joplin-appimage",
+    "localsend-bin",
+    "zen-browser-bin",
+    "helium-browser-bin",
+    "cursor-bin",
+    "ab-download-manager-bin",
+    "mullvad-vpn-bin",
+    "orcaslicer-bin",
+    "bruno-bin",
+    "hoppscotch-bin",
+    // Known AUR packages without suffix
+    "google-chrome",
+    "sublime-text-4",
+    "spotify",
+    "stremio",
+    "dropbox",
+    "slack-desktop",
+    "zoom",
+    "proton-vpn-gtk-app",
+    "bitwarden",
+    "obsidian",
+  ]);
 
-    const aurPackages = packages.filter(p => knownAurPackages.has(p.pkg));
-    const officialPackages = packages.filter(p => !knownAurPackages.has(p.pkg));
+  const aurPackages = packages.filter(p => knownAurPackages.has(p.pkg));
+  const officialPackages = packages.filter(p => !knownAurPackages.has(p.pkg));
 
-    return generateAsciiHeader('Arch Linux', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Arch Linux", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { pacman -Qi "$1" &>/dev/null; }
 
 install_pkg() {
@@ -394,7 +431,9 @@ done
 info "Syncing databases..."
 with_retry "sudo pacman -Sy --noconfirm" >/dev/null && success "Synced" || warn "Sync failed, continuing..."
 
-${aurPackages.length > 0 ? `
+${
+  aurPackages.length > 0
+    ? `
 if ! command -v yay &>/dev/null; then
     warn "Installing yay for AUR packages..."
     sudo pacman -S --needed --noconfirm git base-devel >/dev/null 2>&1
@@ -404,21 +443,28 @@ if ! command -v yay &>/dev/null; then
     rm -rf "$tmp"
     command -v yay &>/dev/null && success "yay installed" || warn "yay install failed"
 fi
-` : ''}
+`
+    : ""
+}
 
 echo
 info "Installing $TOTAL packages"
 echo
 
-${officialPackages.map(({ app, pkg }) => `install_pkg "${app.name}" "sudo pacman -S --needed --noconfirm ${pkg}" "${pkg}"`).join('\n')}
-${aurPackages.length > 0 ? `
+${officialPackages.map(({ app, pkg }) => `install_pkg "${app.name}" "sudo pacman -S --needed --noconfirm ${pkg}" "${pkg}"`).join("\n")}
+${
+  aurPackages.length > 0
+    ? `
 if command -v yay &>/dev/null; then
-${aurPackages.map(({ app, pkg }) => `    install_pkg "${app.name}" "yay -S --needed --noconfirm ${pkg}" "${pkg}"`).join('\n')}
+${aurPackages.map(({ app, pkg }) => `    install_pkg "${app.name}" "yay -S --needed --noconfirm ${pkg}" "${pkg}"`).join("\n")}
 fi
-` : ''}
+`
+    : ""
+}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -426,10 +472,13 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateFedoraScript(packages: { app: AppData; pkg: string }[]): string {
-    const rpmFusionPkgs = ['steam', 'vlc', 'ffmpeg', 'obs-studio'];
-    const needsRpmFusion = packages.some(p => rpmFusionPkgs.includes(p.pkg));
+  const rpmFusionPkgs = ["steam", "vlc", "ffmpeg", "obs-studio"];
+  const needsRpmFusion = packages.some(p => rpmFusionPkgs.includes(p.pkg));
 
-    return generateAsciiHeader('Fedora', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Fedora", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { rpm -q "$1" &>/dev/null; }
 
 install_pkg() {
@@ -466,7 +515,9 @@ install_pkg() {
 [ "$EUID" -eq 0 ] && { error "Run as regular user, not root."; exit 1; }
 command -v dnf &>/dev/null || { error "dnf not found"; exit 1; }
 
-${needsRpmFusion ? `
+${
+  needsRpmFusion
+    ? `
 if ! dnf repolist 2>/dev/null | grep -q rpmfusion; then
     info "Enabling RPM Fusion..."
     sudo dnf install -y \\
@@ -474,16 +525,19 @@ if ! dnf repolist 2>/dev/null | grep -q rpmfusion; then
         "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" \\
         >/dev/null 2>&1 && success "RPM Fusion enabled"
 fi
-` : ''}
+`
+    : ""
+}
 
 echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -491,7 +545,10 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateOpenSUSEScript(packages: { app: AppData; pkg: string }[]): string {
-    return generateAsciiHeader('openSUSE', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("openSUSE", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { rpm -q "$1" &>/dev/null; }
 
 install_pkg() {
@@ -537,10 +594,11 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -548,7 +606,10 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateNixScript(packages: { app: AppData; pkg: string }[]): string {
-    return generateAsciiHeader('Nix', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Nix", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { nix-env -q 2>/dev/null | grep -q "$1"; }
 
 install_pkg() {
@@ -591,12 +652,13 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
 echo
 info "Restart your shell for new commands."
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -604,12 +666,17 @@ info "Restart your shell for new commands."
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateFlatpakScript(packages: { app: AppData; pkg: string }[]): string {
-    const parallel = packages.length >= 3;
+  const parallel = packages.length >= 3;
 
-    return generateAsciiHeader('Flatpak', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Flatpak", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() { flatpak list --app 2>/dev/null | grep -q "$1"; }
 
-${parallel ? `
+${
+  parallel
+    ? `
 # Parallel install for Flatpak
 install_parallel() {
     local pids=()
@@ -657,7 +724,8 @@ install_parallel() {
     local elapsed=$(($(date +%s) - start))
     echo -e "\${DIM}Parallel install took \${elapsed}s\${NC}"
 }
-` : `
+`
+    : `
 install_pkg() {
     local name=$1 appid=$2
     CURRENT=$((CURRENT + 1))
@@ -682,7 +750,8 @@ install_pkg() {
         FAILED+=("$name")
     fi
 }
-`}
+`
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -702,15 +771,17 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${parallel
-            ? `install_parallel ${packages.map(({ app, pkg }) => `"${app.name}|${pkg}"`).join(' ')}`
-            : packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')
-        }
+${
+  parallel
+    ? `install_parallel ${packages.map(({ app, pkg }) => `"${app.name}|${pkg}"`).join(" ")}`
+    : packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")
+}
 
 print_summary
 echo
 info "Restart session for apps in menu."
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -718,7 +789,10 @@ info "Restart session for apps in menu."
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function generateSnapScript(packages: { app: AppData; pkg: string }[]): string {
-    return generateAsciiHeader('Snap', packages.length) + generateSharedUtils(packages.length) + `
+  return (
+    generateAsciiHeader("Snap", packages.length) +
+    generateSharedUtils(packages.length) +
+    `
 is_installed() {
     local snap_name=$(echo "$1" | awk '{print $1}')
     snap list 2>/dev/null | grep -q "^$snap_name "
@@ -773,10 +847,11 @@ echo
 info "Installing $TOTAL packages"
 echo
 
-${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join('\n')}
+${packages.map(({ app, pkg }) => `install_pkg "${app.name}" "${pkg}"`).join("\n")}
 
 print_summary
-`;
+`
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -784,44 +859,60 @@ print_summary
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export function generateInstallScript(options: ScriptOptions): string {
-    const { distroId, selectedAppIds } = options;
-    const distro = distros.find(d => d.id === distroId);
+  const { distroId, selectedAppIds } = options;
+  const distro = distros.find(d => d.id === distroId);
 
-    if (!distro) return '#!/bin/bash\necho "Error: Unknown distribution"\nexit 1';
+  if (!distro) return '#!/bin/bash\necho "Error: Unknown distribution"\nexit 1';
 
-    const packages = getSelectedPackages(selectedAppIds, distroId);
-    if (packages.length === 0) return '#!/bin/bash\necho "No packages selected"\nexit 0';
+  const packages = getSelectedPackages(selectedAppIds, distroId);
+  if (packages.length === 0) return '#!/bin/bash\necho "No packages selected"\nexit 0';
 
-    switch (distroId) {
-        case 'ubuntu': return generateUbuntuScript(packages);
-        case 'debian': return generateDebianScript(packages);
-        case 'arch': return generateArchScript(packages);
-        case 'fedora': return generateFedoraScript(packages);
-        case 'opensuse': return generateOpenSUSEScript(packages);
-        case 'nix': return generateNixScript(packages);
-        case 'flatpak': return generateFlatpakScript(packages);
-        case 'snap': return generateSnapScript(packages);
-        default: return '#!/bin/bash\necho "Unsupported distribution"\nexit 1';
-    }
+  switch (distroId) {
+    case "ubuntu":
+      return generateUbuntuScript(packages);
+    case "debian":
+      return generateDebianScript(packages);
+    case "arch":
+      return generateArchScript(packages);
+    case "fedora":
+      return generateFedoraScript(packages);
+    case "opensuse":
+      return generateOpenSUSEScript(packages);
+    case "nix":
+      return generateNixScript(packages);
+    case "flatpak":
+      return generateFlatpakScript(packages);
+    case "snap":
+      return generateSnapScript(packages);
+    default:
+      return '#!/bin/bash\necho "Unsupported distribution"\nexit 1';
+  }
 }
 
 export function generateSimpleCommand(selectedAppIds: Set<string>, distroId: DistroId): string {
-    const packages = getSelectedPackages(selectedAppIds, distroId);
-    if (packages.length === 0) return '# No packages selected';
+  const packages = getSelectedPackages(selectedAppIds, distroId);
+  if (packages.length === 0) return "# No packages selected";
 
-    const pkgList = packages.map(p => p.pkg).join(' ');
+  const pkgList = packages.map(p => p.pkg).join(" ");
 
-    switch (distroId) {
-        case 'ubuntu':
-        case 'debian': return `sudo apt install -y ${pkgList}`;
-        case 'arch': return `yay -S --needed --noconfirm ${pkgList}`;
-        case 'fedora': return `sudo dnf install -y ${pkgList}`;
-        case 'opensuse': return `sudo zypper install -y ${pkgList}`;
-        case 'nix': return `nix-env -iA ${packages.map(p => `nixpkgs.${p.pkg}`).join(' ')}`;
-        case 'flatpak': return `flatpak install flathub -y ${pkgList}`;
-        case 'snap':
-            if (packages.length === 1) return `sudo snap install ${pkgList}`;
-            return packages.map(p => `sudo snap install ${p.pkg}`).join(' && ');
-        default: return `# Install: ${pkgList}`;
-    }
+  switch (distroId) {
+    case "ubuntu":
+    case "debian":
+      return `sudo apt install -y ${pkgList}`;
+    case "arch":
+      return `yay -S --needed --noconfirm ${pkgList}`;
+    case "fedora":
+      return `sudo dnf install -y ${pkgList}`;
+    case "opensuse":
+      return `sudo zypper install -y ${pkgList}`;
+    case "nix":
+      return `nix-env -iA ${packages.map(p => `nixpkgs.${p.pkg}`).join(" ")}`;
+    case "flatpak":
+      return `flatpak install flathub -y ${pkgList}`;
+    case "snap":
+      if (packages.length === 1) return `sudo snap install ${pkgList}`;
+      return packages.map(p => `sudo snap install ${p.pkg}`).join(" && ");
+    default:
+      return `# Install: ${pkgList}`;
+  }
 }
